@@ -1,0 +1,68 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  pull_request_target:
+    branches: [ main, master ]
+
+env:
+  GOVERSION: '1.23'
+
+jobs:
+  test-server:
+    name: Test Server
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GOVERSION }}
+          cache-dependency-path: |
+            go.sum
+
+      - name: Lint
+        uses: golangci/golangci-lint-action@v6
+
+      - name: Test
+        run: go test -race -coverprofile=coverage.txt ./...
+
+      - name: Upload coverage results
+        uses: codecov/codecov-action@v5
+        with:
+          name: fops-tunnel-server
+          token: ${{ secrets.CODECOV_TOKEN }}
+  test-client:
+    name: Test Client
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GOVERSION }}
+          cache-dependency-path: |
+            go.sum
+
+      - name: Lint
+        uses: golangci/golangci-lint-action@v6
+
+      - name: Test
+        run: go test -race -coverprofile=coverage.txt ./...
+
+      - name: Upload coverage results
+        uses: codecov/codecov-action@v5
+        with:
+          name: fops-tunnel-client
+          token: ${{ secrets.CODECOV_TOKEN }}

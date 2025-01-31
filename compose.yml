@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  web:
+    image: nginx:alpine
+    ports:
+      - 8080:80
+  fops-tunnel-server:
+    build: 
+      context: ./server
+      dockerfile: Dockerfile
+    environment:
+      - DEBUG=1
+      - FOPS_TUNNEL_SERVER_HOST=localhost
+      - FOPS_TUNNEL_SERVER_HTTP_PORT=30000
+      - FOPS_TUNNEL_SERVER_HTTPS_PORT=30001
+      - FOPS_TUNNEL_SERVER_PORT=30002
+      - FOPS_TUNNEL_SERVER_ADMIN_API_TOKEN=this-is-not-a-secure-token
+      - FOPS_TUNNEL_SERVER_AUTH_KEYS_PATH=/etc/caddy/ssh/authorized_keys
+      - FOPS_TUNNEL_SERVER_TIMEOUT=15m
+    ports:
+      - "30000:30000"
+      - "30001:30001"
+      - "30002:30002"
+    volumes:
+      - ./_fixtures/server/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./_fixtures/server/ssh/authorized_keys:/etc/caddy/ssh/authorized_keys:ro
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "2222"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  fops-tunnel-client-ssh-key:
+    build: 
+      context: ./client
+      dockerfile: Dockerfile
+    environment:
+      - TUNNEL_SERVER_HOST=fops-tunnel-server
+      - TUNNEL_KEY_PATH=/keys/id_rsa
+      - TUNNEL_SERVER_PORT=30002
+      - TUNNEL_USER=tunnel
+      - SOURCE_PORT=80
+      - SOURCE_HOST=web
+      - SUBDOMAIN=test-key
+    volumes:
+      - ./_fixtures/client:/keys:ro
+    depends_on:
+      fops-tunnel-server:
+        condition: service_started
+
+  fops-tunnel-client-ssh-agent:
+    build: 
+      context: ./client
+      dockerfile: Dockerfile
+    environment:
+      - TUNNEL_SERVER_HOST=fops-tunnel-server
+      - TUNNEL_SERVER_PORT=30002
+      - TUNNEL_USER=tunnel
+      - SOURCE_PORT=80
+      - SOURCE_HOST=web
+      - SUBDOMAIN=test-agent
+      - SSH_AUTH_SOCK=${SSH_AUTH_SOCK}
+    volumes:
+      - ${SSH_AUTH_SOCK}:${SSH_AUTH_SOCK}
+    depends_on:
+      fops-tunnel-server:
+        condition: service_started
