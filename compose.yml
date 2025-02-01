@@ -23,7 +23,6 @@ services:
       - "30001:30001"
       - "30002:30002"
     volumes:
-      - ./_fixtures/server/Caddyfile:/etc/caddy/Caddyfile:ro
       - ./_fixtures/server/ssh/authorized_keys:/etc/caddy/ssh/authorized_keys:ro
     healthcheck:
       test: ["CMD", "nc", "-z", "localhost", "2222"]

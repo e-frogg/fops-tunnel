@@ -23,7 +23,7 @@ server-run: server-build
 	FOPS_TUNNEL_SERVER_ADMIN_API_TOKEN=this-is-not-a-secure-token \
 	FOPS_TUNNEL_SERVER_AUTH_KEYS_PATH=./_fixtures/server/ssh/authorized_keys \
 	FOPS_TUNNEL_SERVER_TIMEOUT=15m \
-	./build/$(BINARY_NAME) run --config ./_fixtures/server/Caddyfile
+	./build/$(BINARY_NAME) run --config ./server/Caddyfile
 
 
 server-test:

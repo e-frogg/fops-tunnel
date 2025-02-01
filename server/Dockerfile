@@ -36,6 +36,7 @@ RUN mkdir -p /data /config /etc/caddy/ssh && \
 
 # Copy binary from builder
 COPY --from=builder /build/caddy /usr/bin/caddy
+COPY --from=builder /build/Caddyfile /etc/caddy/Caddyfile
 
 ENV CADDY_DATA_DIR=/data
 
