@@ -18,7 +18,8 @@ COPY . /build/
 
 # Build caddy with plugin
 WORKDIR /build
-RUN xcaddy build v2.7.6 \
+RUN xcaddy build v2.9.1 \
+    --with github.com/caddy-dns/ovh \
     --with github.com/e-frogg/fops-tunnel/server=.
 
 # Final stage
