@@ -1,6 +1,6 @@
 {
     order fops_tunnel before reverse_proxy
-    {$FOPS_TUNNEL_CADDY_CUSTOM_CONFIG}
+    {$FOPS_TUNNEL_CADDY_GLOBAL_CUSTOM_CONFIG}
 
     # debug
     # log {
@@ -16,6 +16,8 @@
     https_port {$FOPS_TUNNEL_SERVER_HTTPS_PORT:443}
 }
 {$FOPS_TUNNEL_SERVER_HOST:localhost}, *.{$FOPS_TUNNEL_SERVER_HOST:localhost} {
+    {$FOPS_TUNNEL_CADDY_CUSTOM_CONFIG}
+
     fops_tunnel {
         ssh_port {$FOPS_TUNNEL_SERVER_PORT:22}
 
