@@ -104,7 +104,7 @@ jobs:
 
       - name: Build Docker image
         id: build
-        uses: docker/build-push-action@11be14d908760a0756f045980728ec5fb7880f74
+        uses: docker/build-push-action@ca877d9245402d1537745e0e356eab47c3520991
         with:
           context: ./${{ matrix.image }}
           push: false
@@ -114,7 +114,7 @@ jobs:
       - name: Push Docker image
         id: push
         if: success()
-        uses: docker/build-push-action@11be14d908760a0756f045980728ec5fb7880f74
+        uses: docker/build-push-action@ca877d9245402d1537745e0e356eab47c3520991
         with:
           context: ./${{ matrix.image }}
           push: true
